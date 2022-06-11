@@ -5,19 +5,15 @@ type DbInfo struct {
 	Version   string
 	Charset   string
 	Collation string
-	DbName    string
+	DBName    string
 }
 
 // DbConfig 数据库配置
 type DbConfig struct {
-	DbType   int // 1. mysql  2. oracle 3. mssql
-	DocType  int // 1. online 3. offline
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Database string
-	Sid      string
+	DocType       int // 1. online 2. offline
+	Dsn           string
+	DBName        string
+	ShardingRegex string
 }
 
 // Column info
@@ -33,6 +29,7 @@ type Column struct {
 // Table info
 type Table struct {
 	TableName    string
+	RealTableName    string
 	TableComment string
 	ColList      []Column
 }

@@ -1,62 +1,49 @@
 package main
 
 import (
-	"db-doc/database"
-	"db-doc/model"
+	"flag"
 	"fmt"
 	"os"
+
+	"db-doc/database"
+	"db-doc/model"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 const version = "v1.1.1"
 
 var dbConfig model.DbConfig
+var _dsn = "sz_to_c_test:Akofm8v4NupZfsB_QoVd@(master.shopee_mkt_ap_meta.mysql.cloud.test.shopee.io:6606)/shopee_mkt_ap_payin_sg_db?charset=utf8mb4&parseTime=True&loc=Local"
+var __dsn = "root:@(localhost:3306)/ferry?charset=utf8mb4&parseTime=True&loc=Local"
+var dsn = flag.String("dsn","","specify the mysql dsn")
+var online = flag.Bool("online",false,"gen online doc")
+var shardingRegex = flag.String("shardingRegex", `_\d{8}`, "specify the sharding regex which sharding table matchs")
+
 
 func main() {
-	fmt.Printf("Welcome to the database document generation tool, the current version is %s \n", version)
-	fmt.Println("? Database type:\n1:MySQL or MariaDB\n2:SQL Server\n3:PostgreSQL")
-	// db type
-	fmt.Scanln(&dbConfig.DbType)
-	if dbConfig.DbType < 1 || dbConfig.DbType > 3 {
-		fmt.Println("wrong number, will exit ...")
-		os.Exit(0)
+	flag.Parse()
+
+	if len(*dsn) == 0 {
+		fmt.Println("need dsn")
+		os.Exit(-1)
 	}
-	GetDefaultConfig()
-	// db host
-	fmt.Println("? Database host (127.0.0.1) :")
-	fmt.Scanln(&dbConfig.Host)
-	// db port
-	fmt.Printf("? Database port (%d) :\n", dbConfig.Port)
-	fmt.Scanln(&dbConfig.Port)
-	// db user
-	fmt.Printf("? Database username (%s) :\n", dbConfig.User)
-	fmt.Scanln(&dbConfig.User)
-	// db password
-	fmt.Println("? Database password (123456) :")
-	fmt.Scanln(&dbConfig.Password)
-	// db name
-	fmt.Println("? Database name:")
-	fmt.Scanln(&dbConfig.Database)
+
+	cfg, err := mysql.ParseDSN(*dsn)
+	if err != nil {
+		fmt.Println("invalid dsn")
+		os.Exit(-1)
+	}
+	dbConfig.Dsn = *dsn
+	dbConfig.DBName = cfg.DBName
+	dbConfig.ShardingRegex = *shardingRegex
 	// doc type
-	fmt.Println("? Document type:\n1:Online\n2:Offline")
-	fmt.Scanln(&dbConfig.DocType)
+	dbConfig.DocType = 2
+	if *online {
+		dbConfig.DocType = 1
+	}
 	// generate
 	database.Generate(&dbConfig)
 }
 
-// GetDefaultConfig get default config
-func GetDefaultConfig() {
-	dbConfig.Host = "127.0.0.1"
-	dbConfig.Password = "123456"
-	if dbConfig.DbType == 1 {
-		dbConfig.Port = 3306
-		dbConfig.User = "root"
-	}
-	if dbConfig.DbType == 2 {
-		dbConfig.Port = 1433
-		dbConfig.User = "sa"
-	}
-	if dbConfig.DbType == 3 {
-		dbConfig.Port = 5432
-		dbConfig.User = "postgres"
-	}
-}
+

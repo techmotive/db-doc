@@ -21,12 +21,12 @@ func createOfflineDoc(docPath string, dbInfo model.DbInfo, tables []model.Table)
 		docMdStr string
 	)
 	// 标题
-	docMdArr = append(docMdArr, fmt.Sprintf("# %s 数据库文档", dbInfo.DbName))
+	docMdArr = append(docMdArr, fmt.Sprintf("# %s 数据库文档", dbInfo.DBName))
 	// 生成基础信息
 	docMdArr = append(docMdArr, "### 基础信息")
 	docMdArr = append(docMdArr, "| 数据库名称 | 版本 | 字符集 | 排序规则 |")
 	docMdArr = append(docMdArr, "| ---- | ---- | ---- | ---- |")
-	docMdArr = append(docMdArr, fmt.Sprintf("| %s | %s | %s | %s |", dbInfo.DbName, dbInfo.Version, dbInfo.Charset, dbInfo.Collation))
+	docMdArr = append(docMdArr, fmt.Sprintf("| %s | %s | %s | %s |", dbInfo.DBName, dbInfo.Version, dbInfo.Charset, dbInfo.Collation))
 	// 生成目录
 	docMdArr = append(docMdArr, "### 数据库表目录")
 	docMdArr = append(docMdArr, "| 序号 | 表名 | 描述 |")
@@ -49,15 +49,15 @@ func createOfflineDoc(docPath string, dbInfo model.DbInfo, tables []model.Table)
 		docMdArr = append(docMdArr, "")
 	}
 	docMdStr = strings.Join(docMdArr, "\r\n")
-	util.WriteToFile(path.Join(docPath, dbInfo.DbName+".md"), docMdStr)
+	util.WriteToFile(path.Join(docPath, dbInfo.DBName+".md"), docMdStr)
 	fmt.Println("markdown generate successfully!")
 	// html
 	docMdArr = append([]string{mdCss}, docMdArr...)
 	docMdStr = strings.Join(docMdArr, "\r\n")
-	htmlPath := path.Join(docPath, dbInfo.DbName+".html")
+	htmlPath := path.Join(docPath, dbInfo.DBName+".html")
 	convert2Html(docMdStr, htmlPath)
 	// pdf
-	pdfPath := path.Join(docPath, dbInfo.DbName+".pdf")
+	pdfPath := path.Join(docPath, dbInfo.DBName+".pdf")
 	convert2Pdf(htmlPath, pdfPath)
 }
 

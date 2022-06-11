@@ -1,13 +1,14 @@
 package doc
 
 import (
-	"db-doc/model"
-	"db-doc/util"
 	"fmt"
 	"log"
 	"net/http"
 	"path"
 	"strings"
+
+	"db-doc/model"
+	"db-doc/util"
 )
 
 // createOnlineDoc create _siderbar.md
@@ -15,12 +16,12 @@ func createOnlineDoc(docPath string, dbInfo model.DbInfo, tables []model.Table) 
 	var sidebar []string
 	var readme []string
 	// sidebar = append(sidebar, "* [数据库文档](README.md)")
-	readme = append(readme, fmt.Sprintf("# %s 数据库文档", dbInfo.DbName))
+	readme = append(readme, fmt.Sprintf("# %s 数据库文档", dbInfo.DBName))
 	// 生成基础信息
 	readme = append(readme, "### 基础信息")
 	readme = append(readme, "| 数据库名称 | 版本 | 字符集 | 排序规则 |")
 	readme = append(readme, "| ---- | ---- | ---- | ---- |")
-	readme = append(readme, fmt.Sprintf("| %s | %s | %s | %s |", dbInfo.DbName, dbInfo.Version, dbInfo.Charset, dbInfo.Collation))
+	readme = append(readme, fmt.Sprintf("| %s | %s | %s | %s |", dbInfo.DBName, dbInfo.Version, dbInfo.Charset, dbInfo.Collation))
 	for i := range tables {
 		sidebar = append(sidebar, fmt.Sprintf("* [%s(%s)](%s.md)", tables[i].TableName, tables[i].TableComment, tables[i].TableName))
 		var tableMd []string
